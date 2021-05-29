@@ -128,5 +128,5 @@ if __name__ == "__main__":
     cmd_transfer = CMDStyleTransfer(args.c_img, args.s_img, img_size, lr=args.lr)
     cmd_transfer.run(vgg_weights=vgg_weights, alpha=args.alpha, epsilon=args.epsilon, max_iter=args.max_iter)
     stylized_image = cmd_transfer.get_current_image()
-    print(f"Save stylized image: {args.output}")
-    stylized_image.save(args.output)
+    print(f"Save stylized image: {args.o_img}")
+    stylized_image.save(args.o_img)
