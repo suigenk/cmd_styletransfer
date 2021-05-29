@@ -1,0 +1,5 @@
+# Output dir.
+images/output/
+
+# Compiled Python Files.
+*pyc
