@@ -8,7 +8,7 @@ import torchvision.transforms as transforms
 from torchvision.models import vgg19
 import torch.nn as nn
 from torch.optim import Adam
-
+from PIL import Image
 from dataset import SingleStyleData
 from model import VGG
 from losses import ContentLoss, StyleLoss
@@ -38,8 +38,8 @@ class CMDStyleTransfer:
                                transform=transform)
 
     def _init_model(self):
-        vgg = vgg19(pretrained=False).eval()
-        vgg.load_state_dict(torch.load('./weights/vgg19-dcbb9e9d.pth'), strict=False)
+        vgg = vgg19(pretrained=True).eval()
+        vgg.load_state_dict(torch.load('/root/.cache/torch/hub/checkpoints/vgg19-dcbb9e9d.pth'), strict=False)
         # print(list(vgg.children()))
         modules = list(vgg.children())[0][:29]
         # Replace inplace ReLU as it
@@ -113,6 +113,7 @@ if __name__ == "__main__":
     parser.add_argument('--lr', type=float, default=0.1, help='Learning rate used during optimization')
     parser.add_argument('--c_img', type=str, default='./images/content/pablo_picasso.jpg', help='Path to content image')
     parser.add_argument('--s_img', type=str, default='./images/style/picasso.jpg', help='Path to style image')
+    parser.add_argument('--o_img', type=str, default='./images/output/picasso.png', help='Path to output image')
     parser.add_argument('--im_size', type=int, default=512, nargs='+', help='Image size. Either single int or tuple of int')
     args = parser.parse_args()
 
@@ -127,11 +128,5 @@ if __name__ == "__main__":
     cmd_transfer = CMDStyleTransfer(args.c_img, args.s_img, img_size, lr=args.lr)
     cmd_transfer.run(vgg_weights=vgg_weights, alpha=args.alpha, epsilon=args.epsilon, max_iter=args.max_iter)
     stylized_image = cmd_transfer.get_current_image()
-
-    # Plot result
-    fig = plt.figure(figsize=(10, 10), facecolor='white')
-    ax = plt.Axes(fig, [0., 0., 1., 1.])
-    plt.axis('off')
-    plt.title('Stylized image')
-    plt.imshow(stylized_image)
-    plt.show()
+    print(f"Save stylized image: {args.output}")
+    stylized_image.save(args.output)
